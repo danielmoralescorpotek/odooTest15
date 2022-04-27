@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_lotecodebar" model="ir.actions.report">
+        <field name="name">Reporte de código de barras</field>
+        <field name="model">cok.ibone.lotecodebar</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">iBoneEtiquetaCodBar.report_lotecodebar</field>
+        <field name="report_file">iBoneEtiquetaCodBar.report_lotecodebar</field>
+        <field name="print_report_name">('Lote CodeBar - %s' %(object.name))</field>
+        <field name="binding_model_id" ref="model_cok_ibone_lotecodebar" />
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="iBoneEtiquetaCodBar.ibone_lotecodebar_formatohoja"/>
+    </record>
+
+    <template id="report_lotecodebar">
+        <t t-call="web.basic_layout">
+            <style>
+                .codigoBarras {
+                    font-family:Code39AzaleaNarrow1; 
+                    font-size: 35pt;
+                }
+                .acotacionCodigoBarras {
+                    font-family:Arial; 
+                    font-size: 16pt;
+                }
+            </style>
+            <t t-set="ctd_Paginas" t-value="0" />
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.layout">
+                    <tr t-foreach="o.detalle_ids" t-as="RgCodBar">
+                        <div class="page">
+                            <t t-if="ctd_Paginas != 0">
+                                <p style="page-break-after:always;" />
+                            </t>
+                            <div>
+                                <span t-field="o.name" class="acotacionCodigoBarras"/>
+                                <span t-field="RgCodBar.dimensiones" class="acotacionCodigoBarras" style="float: right"/>
+                            </div>
+                            <center>
+                                <t t-set="qwCodigoConcatenado" t-value="RgCodBar.codigoBarras"/>
+                                <div>
+                                    <div>
+                                        <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', qwCodigoConcatenado, 600, 150)" style="margin-left: -30px"/>
+                                    </div>
+                                    <div><span t-esc="qwCodigoConcatenado" class="acotacionCodigoBarras"/></div>
+                                    <div><span t-esc="RgCodBar.descripcion" class="acotacionCodigoBarras"/></div>
+                                </div>
+                            </center>
+                            <t t-set="ctd_Paginas" t-value="ctd_Paginas + 1" />
+                        </div>
+                    </tr>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

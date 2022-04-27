@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="model_ibone_lcb_compraproveedor_form" model="ir.ui.view">
+        <field name="name">modelo.ibone.lcb.compraproveedor.form</field>
+        <field name="model">cok.ibone.lotecodebar.compraproveedor</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <header>
+                    <button string="Adjuntar lotes" type="object" name="proceso_validacion" class="oe_highlight" />
+                </header>
+                <div class="alert alert-info" role="alert" style="margin-bottom: 0px" attrs="{'invisible': [('proceso_validado', '=', False)]}" >
+                    <p>El procedimiento ha sido finalizado, regrese a la compra para validar</p>
+                </div>
+                <sheet>
+                    <group string="iBone Lote CodeBar">
+                        <field name="proceso_validado" invisible="1"/>
+                        <field name="id_stpick_seleccionado" invisible="1" />
+                        <field name="identificador_lote_codebar" />
+
+                        <field name="detalle_ids" readonly="1" force_save="1">
+                            <tree editable="bottom">
+                                <control>
+                                    <create name="add_product_control" string="Agregar partida" />
+                                </control>
+                                <field name="id_partida" invisible="1" />
+                                <field name="producto_partida" />
+                                <field name="cantidad_partida" />
+                                <field name="lote_partida" invisible="1" />
+                            </tree>
+                        </field>
+
+                        <field name="detalle_salida_ids" readonly="1" force_save="1">
+                            <tree editable="bottom">
+                                <control>
+                                    <create name="add_product_control" string="Agregar partida" />
+                                </control>
+                                <field name="id_partida" invisible="1" />
+                                <field name="producto_partida" />
+                                <field name="cantidad_partida" />
+                                <field name="lote_partida" />
+                            </tree>
+                        </field>
+
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

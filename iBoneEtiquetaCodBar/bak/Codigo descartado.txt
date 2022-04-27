@@ -1,0 +1,158 @@
+En iBone_LCB_CompraProveedor.py
+
+# @api.model
+    # def create(self, vals_list):
+    #     return super().create(vals_list)
+    
+    # def proceso_validacion_TESTER(self):
+    #     print("Llamada el proceso validacion de Lote CodeBar desde CTP")
+    #     obj_Compra = self.env['stock.picking'].search([('id', '=', "%s" %self.id_stpick_seleccionado)])
+    #     if obj_Compra:
+    #         #obj_Compra.button_validate()
+    #         #tupla_lineas = obj_Compra.move_ids_without_package
+    #         print(obj_Compra.move_ids_without_package)
+    #         for oLineaDocumento in obj_Compra.move_ids_without_package:
+    #             print(oLineaDocumento)
+    #             for oLineaStockMove in oLineaDocumento.move_line_nosuggest_ids:
+    #                 print(oLineaStockMove)
+            
+    #         partidaLotes = {'move_line_nosuggest_ids': []}
+
+    #         LoteSolicitud = {
+    #             'company_id': oLineaDocumento.company_id.id, 
+    #             'picking_id': obj_Compra.id, 
+    #             'move_id': False, 
+    #             'product_id': oLineaDocumento.product_id.id, 
+    #             'package_level_id': False, 
+    #             'location_id': oLineaDocumento.location_id.id, 
+    #             'location_dest_id': oLineaDocumento.location_dest_id.id,
+    #             'lot_id': False, 
+    #             'lot_name': 'iBoneLoteCodeBarTest', 
+    #             'package_id': False, 
+    #             'result_package_id': False, 
+    #             'owner_id': False, 
+    #             'qty_done': oLineaDocumento.product_qty, 
+    #             'product_uom_id': oLineaDocumento.product_uom.id
+    #         }
+
+    #         for oLineaDocumento in obj_Compra.move_ids_without_package:
+    #             partidaLotes['move_line_nosuggest_ids'].append([0,0,LoteSolicitud])
+    #             oLineaDocumento.write(partidaLotes)
+
+    # @api.onchange('identificador_lote_codebar')
+    # def _gestionar_lote_asignado_VIEJO(self):
+    #     if self.identificador_lote_codebar: 
+    #         datoAgregado = False
+    #         oArregloCodigoBarras = self.identificador_lote_codebar.split(sep=',')
+    #         for oNodo in self.detalle_ids:
+    #             if len(oArregloCodigoBarras) != 3:
+    #                 raise UserError("El dato que ingresó no es correcto, valide se capturó correctamente")
+
+    #             if self.detalle_salida_ids:
+    #                 for oNodoDetalleSalida in self.detalle_salida_ids:
+    #                     if oNodoDetalleSalida.lote_partida == (oArregloCodigoBarras[0] + "-" + oArregloCodigoBarras[2]):
+    #                         raise UserError("El lote que ingresó ya ha sido asignado en este documento")
+
+    #             obj_StockMove = self.env['stock.move'].search([('id', '=', "%s" %oNodo.id_partida)])
+
+    #             if obj_StockMove.product_id.default_code == oArregloCodigoBarras[0] and oNodo.cantidad_partida == float(oArregloCodigoBarras[1]):
+    #                 self.detalle_ids = [(3, oNodo.id)]
+    #                 LoteDetalleCopia = {
+    #                         'presupuesto_id': self.id_stpick_seleccionado,
+    #                         'id_partida': oNodo.id_partida,
+    #                         'producto_partida': oNodo.producto_partida,
+    #                         'cantidad_partida': oNodo.cantidad_partida,
+    #                         'lote_partida': (oArregloCodigoBarras[0] + "-" + oArregloCodigoBarras[2])
+    #                     }
+    #                 self.detalle_salida_ids = [(0,0,LoteDetalleCopia)]
+    #                 datoAgregado = True
+    #                 break
+
+    #         if datoAgregado:
+    #             self.identificador_lote_codebar = ''
+    #             #self.identificador_lote_codebar.focus()
+    #         else:
+    #             raise UserError("El código de barras proporcionado no coincide con ninuguna partida por asignar")
+
+--
+En iBone_LCB_VentaCliente.py
+
+    # El método está comepleto pero tiene partes comentadas por quedar sin uso
+    @api.onchange('identificador_lote_codebar')
+    def _gestionar_lote_asignado(self):
+        if self.identificador_lote_codebar:
+            datoAgregado = False
+            oArregloCodigoBarras = self.identificador_lote_codebar.split(sep=',')
+            for oNodo in self.detalle_ids:
+                if len(oArregloCodigoBarras) != 3:
+                    raise UserError("El dato que ingresó no es correcto, valide se capturó correctamente")
+
+                obj_StockMove = self.env['stock.move'].search([('id', '=', "%s" %oNodo.id_partida)])
+                sNombreLote = (oArregloCodigoBarras[0] + "-" + oArregloCodigoBarras[2])
+
+                if obj_StockMove.product_id.default_code == oArregloCodigoBarras[0]:
+                    obj_Lote = self.env['stock.production.lot'].search([('name', '=', sNombreLote)])
+
+                    if obj_Lote:
+                        # En esta condición detallamos la cantidad disponible en el lote menos la cantidad reservada por otra partida
+                        # con el mismo código artículo
+                        # o_DetalleSalidaRecuento = self.detalle_salida_ids.search([('lote_partida', '=', "%s" %oArregloCodigoBarras[2]), ('id', 'in', self.detalle_salida_ids._ids)]) # Se comenta por error, serach me trae los valores en la base de datos, solo requiero los que que están en virtual
+
+                        fl_CantidadLote = 0.0
+
+                        for oNodoIter in self.detalle_salida_ids:
+                            if oNodoIter.lote_partida == sNombreLote:
+                                fl_CantidadLote += oNodoIter.cantidad_partida
+                        
+                        fl_CantidadLote = obj_Lote.product_qty - fl_CantidadLote
+
+                        # if o_DetalleSalidaRecuento:
+                        #     fl_CantidadLote = 0.0
+
+                        #     for oNodo_DetalleSalidaRecuento in o_DetalleSalidaRecuento:
+                        #         fl_CantidadLote += oNodo_DetalleSalidaRecuento.cantidad_partida
+
+                        #     fl_CantidadLote = obj_Lote.product_qty - fl_CantidadLote
+                        # else:
+                        #     fl_CantidadLote = obj_Lote.product_qty
+
+                        if fl_CantidadLote <= 0:
+                            raise UserError("El lote proporcionado no cuenta con inventario disponible (Cantidad 0)")
+
+                        # En esta sección gestionamos la inserción del elemento a la grilla salida.
+                        # La asignación puede ser parcial así que tendremos que operar con cantidades.
+                        if oNodo.cantidad_partida <= fl_CantidadLote:
+                            self.detalle_ids = [(3, oNodo.id)]
+                            LoteDetalleCopia = {
+                                'presupuesto_id': self.id_stpick_seleccionado,
+                                'id_partida': oNodo.id_partida,
+                                'producto_partida': oNodo.producto_partida,
+                                'cantidad_partida': oNodo.cantidad_partida,
+                                'lote_partida': sNombreLote,
+                                'id_lote_partida': obj_Lote.id
+                            }
+                            self.detalle_salida_ids = [(0,0,LoteDetalleCopia)]
+                            datoAgregado = True
+                            break
+                        else:
+                            oNodo.cantidad_partida -= fl_CantidadLote
+                            LoteDetalleCopia = {
+                                'presupuesto_id': self.id_stpick_seleccionado,
+                                'id_partida': oNodo.id_partida,
+                                'producto_partida': oNodo.producto_partida,
+                                'cantidad_partida': fl_CantidadLote,
+                                'lote_partida': sNombreLote,
+                                'id_lote_partida': obj_Lote.id
+                            }
+                            self.detalle_salida_ids = [(0,0,LoteDetalleCopia)]
+                            datoAgregado = True
+                            break
+                    else:
+                        raise UserError("El lote en el código de barras proporcionado no está en el inventario del sistema")
+            
+            if datoAgregado:
+                self.identificador_lote_codebar = ''
+                #self.identificador_lote_codebar.focus()
+            else:
+                raise UserError("El código de barras proporcionado no coincide con ninuguna partida por asignar")
+

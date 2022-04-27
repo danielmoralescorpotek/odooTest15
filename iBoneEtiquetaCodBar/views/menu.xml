@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_open_iBoneLtCodeBar" model="ir.actions.act_window">
+        <field name="name">Corpotek iBone</field>
+        <field name="res_model">cok.ibone.lotecodebar</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_open_iBoneLCBBusqueda" model="ir.actions.act_window">
+        <field name="name">Corpotek iBone</field>
+        <field name="res_model">cok.ibone.lotecodebar.busqueda</field>
+        <field name="view_mode">form</field>
+    </record>
+
+    <!-- <record id="action_open_iBoneLCBCompraProv" model="ir.actions.act_window">
+        <field name="name">Corpotek iBone Compra</field>
+        <field name="res_model">cok.ibone.lotecodebar.compraproveedor</field>
+        <field name="view_mode">form</field>
+    </record> -->
+
+    <menuitem id="menu_principal" name="iBone Lote CodeBar" />
+    <menuitem parent="menu_principal" id="menu_horizontal" name="Principal" />
+    <menuitem parent="menu_horizontal" id="menu_horizontal_LoteCB" name="Lote CodeBar" action="action_open_iBoneLtCodeBar" />
+    <menuitem parent="menu_horizontal" id="menu_horizontal_LCBBusqueda" name="Búsqueda lote" action="action_open_iBoneLCBBusqueda" />
+
+    <!-- <menuitem parent="menu_principal" id="menu_horizontal_op" name="Operaciones" />
+    <menuitem parent="menu_horizontal_op" id="menu_horizontal_CompraProv" name="Compra proveedor" action="action_open_iBoneLCBCompraProv" /> -->
+</odoo>

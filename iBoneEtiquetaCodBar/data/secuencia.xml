@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="secuencia_ibone_lotecodebar" model="ir.sequence">
+        <field name="name">iBone Lote CodeBar Documento</field>
+        <field name="implementation">no_gap</field>
+        <field name="code">secuencia.ibone.lotecodebar</field>
+        <field name="prefix">LCB-</field>
+        <field name="padding">0</field>
+        <field name="number_increment">1</field>
+    </record>
+    <record id="secuencia_ibone_lotecodebar_detalle" model="ir.sequence">
+        <field name="name">iBone Lote CodeBar Detalle</field>
+        <field name="implementation">no_gap</field>
+        <field name="code">secuencia.ibone.lotecodebar.detalle</field>
+        <field name="padding">5</field>
+        <field name="number_increment">1</field>
+    </record>
+</odoo>

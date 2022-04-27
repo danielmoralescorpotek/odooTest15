@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ibone_lotecodebar_formatohoja" model="report.paperformat">
+        <field name="name">Ticket CodeBar</field>
+        <field name="format">custom</field>
+        <field name="page_height">70</field>
+        <field name="page_width">70</field>
+        <field name="margin_top">20</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="dpi">96</field>
+    </record>
+</odoo>
